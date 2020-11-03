@@ -39,7 +39,7 @@ BEGIN
           init_data.ID := INVUSER.INVLOGNUMBER_SEQ.NEXTVAL;
           init_data.MAPPING_STATUS := NULL;
           init_data.MODIFY_DATE := SYSDATE;
-          init_data.ORDER_ID := 'ORDER_ID';
+          init_data.ORDER_ID := V_PREFIX_VIEW_ID||DAT.view_id ;
           init_data.REMARK := NULL;
           init_data.RESULT := 'success';
           IF DAT.INVENTORY_TYPE_ID = '101' THEN

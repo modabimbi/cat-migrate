@@ -102,6 +102,9 @@ BEGIN
               init_data.MVNO_ID := '999';
               init_data_profile.PAYMENT_MODE := null;
               IF DAT.INVENTORY_TYPE_ID = '201' THEN
+                IF REGEXP_SUBSTR (DAT.EXTERNAL_ID, '\d{9}') is null or  length(DAT.EXTERNAL_ID) <> 9 THEN 
+                  CONTINUE; 
+                end if;
                 init_data.EXTERNAL_ID := DAT.EXTERNAL_ID;
                 init_data.OPERATOR_ID := 0;
                 init_data.DIGIT := 2;
@@ -209,10 +212,12 @@ BEGIN
                   END IF;
                   
                 END IF;
+              
                 
-               
-                
-              ELSIF DAT.INVENTORY_TYPE_ID = '101' THEN
+              ELSIF DAT.INVENTORY_TYPE_ID = '101'  THEN
+                IF SUBSTR(DAT.EXTERNAL_ID , 0 , 2 ) = '52' then
+                  CONTINUE; 
+                END IF;
                 init_data.EXTERNAL_ID := NULL;
                 init_data.OPERATOR_ID := 1;
                 init_data.DIGIT := null;
