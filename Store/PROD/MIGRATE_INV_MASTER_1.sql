@@ -101,6 +101,7 @@ BEGIN
               init_data.PUK2 := null;
               init_data.MVNO_ID := '999';
               init_data_profile.PAYMENT_MODE := null;
+              Update INVD_MAIN m set m.MIGRATE = 9 where m.rowid = DAT.rowid;
               IF DAT.INVENTORY_TYPE_ID = '201' THEN
                 IF REGEXP_SUBSTR (DAT.EXTERNAL_ID, '\d{9}') is null or  length(DAT.EXTERNAL_ID) <> 9 THEN 
                   CONTINUE; 
@@ -326,7 +327,7 @@ BEGIN
               (  MASTER_PROFILE_ID,  CREATED_DATE,  UPDATED_DATE,  CREATED_BY,  UPDATED_BY,  IS_ACTIVE,  REMARK,  LUCKY_NUMBER,  LUCKY_NUMBER_LEVEL,  NON_CHARGE,  OWNER,  PAYMENT_MODE,  SALE_CHANEL,  STATUS,  MASTER_ID,  FLAG_VIP,  PREVIOUS_STATUS,  STATUS_BEFORE_PREVIOUS,  OM_OWNER,  OM_RESERVED_TYPE,  OM_RESERVED_DATE,  IS_TER_OCS  )  
               VALUES  
               (  init_data_profile.MASTER_PROFILE_ID,  init_data_profile.CREATED_DATE,  init_data_profile.UPDATED_DATE,  init_data_profile.CREATED_BY,  init_data_profile.UPDATED_BY,  init_data_profile.IS_ACTIVE,  init_data_profile.REMARK,  init_data_profile.LUCKY_NUMBER,  init_data_profile.LUCKY_NUMBER_LEVEL,  init_data_profile.NON_CHARGE,  init_data_profile.OWNER,  init_data_profile.PAYMENT_MODE,  init_data_profile.SALE_CHANEL,  init_data_profile.STATUS,  init_data_profile.MASTER_ID,  init_data_profile.FLAG_VIP,  init_data_profile.PREVIOUS_STATUS,  init_data_profile.STATUS_BEFORE_PREVIOUS,  init_data_profile.OM_OWNER,  init_data_profile.OM_RESERVED_TYPE,  init_data_profile.OM_RESERVED_DATE,  init_data_profile.IS_TER_OCS  );
-              Update INVD_MAIN m set m.MIGRATE = 9 where m.rowid = DAT.rowid;
+              
 --          EXCEPTION   
 --            WHEN others THEN 
 --              DBMS_OUTPUT.PUT_LINE( 'err : ' || DAT.EXTERNAL_ID);
