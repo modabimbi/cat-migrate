@@ -48,3 +48,22 @@ BEGIN
             END IF;
             
             select count(1) into V_COUNT_MAIN from INVD_MAIN where EXTERNAL_ID = DAT.ADDTL_NOTIF_EXTERNAL_ID and INVENTORY_TYPE_ID = '101';
+            if V_COUNT_MAIN > 0 then
+              select SECONDARY_CODE into init_data.SECONDARY_CODE from INVD_MAIN where EXTERNAL_ID = DAT.ADDTL_NOTIF_EXTERNAL_ID and INVENTORY_TYPE_ID = '101';
+            
+            end if;
+            INSERT INTO invuser.TEST_INV_MAPPING 
+            ( MAPPING_ID, CREATED_DATE, UPDATED_DATE, CREATED_BY, UPDATED_BY, IS_ACTIVE, REMARK, EXTERNAL_ID, MAPPING_STATUS, MULTISIM_FLAG, SECONDARY_CODE, IMSI ) 
+            VALUES 
+            ( init_data.MAPPING_ID, init_data.CREATED_DATE, init_data.UPDATED_DATE, init_data.CREATED_BY, init_data.UPDATED_BY, init_data.IS_ACTIVE, init_data.REMARK, init_data.EXTERNAL_ID, init_data.MAPPING_STATUS, init_data.MULTISIM_FLAG, init_data.SECONDARY_CODE, init_data.IMSI );
+            update ACCOUNT_SUBSCRIBER set MIGRATE = 'Y' where ROWID = dat.rowid;
+         END LOOP;
+          IF C_MAIN_DATA%ROWCOUNT = 0 then
+             V_ENDLOOP := TRUE;
+          END IF;
+         CLOSE C_MAIN_DATA;
+         commit;
+         end;
+     END LOOP;
+     DBMS_OUTPUT.PUT_LINE( 'End' || to_char(sysdate , 'dd/mm/yyyy hh24:mi'));
+END MIGRATE_INV_MAPPING;
