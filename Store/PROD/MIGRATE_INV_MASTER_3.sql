@@ -217,7 +217,7 @@ BEGIN
                
                 
               ELSIF DAT.INVENTORY_TYPE_ID = '101' THEN
-                IF SUBSTR(DAT.EXTERNAL_ID , 0 , 2 ) = '52' then
+                IF SUBSTR(DAT.EXTERNAL_ID , 0 , 2 ) <> '52' then
                   CONTINUE; 
                 END IF;
                 init_data.EXTERNAL_ID := NULL;
@@ -318,6 +318,9 @@ BEGIN
               
               init_data.EXTN_ID_TYPE := DAT.INVENTORY_TYPE_ID;
               
+              if init_data_profile.PAYMENT_MODE = 1 and init_data_profile.STATUS = 8 then --FIX 8 ==> 1 2020/11/06
+                init_data_profile.STATUS := 1; 
+              end if;
               
               INSERT INTO invuser.INV_MASTER 
               ( MASTER_ID, CREATED_DATE, UPDATED_DATE, CREATED_BY, UPDATED_BY, IS_ACTIVE, REMARK, EXTERNAL_ID, EXTN_ID_TYPE, MVNO_ID, OPERATOR_ID, PIN1, PIN2, PUK1, PUK2, SECONDARY_CODE, ZONE_ID, IMSI, NUMBER_TYPE, SIM_FLAG, SIM_CODE, DIGIT ) 
