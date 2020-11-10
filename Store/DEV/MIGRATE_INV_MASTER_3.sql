@@ -68,18 +68,7 @@ BEGIN
               PAYMENT_MODE1 := null;
               CURRENT_STATE := null;
               V_COUNT_RTC := 0;
-              SELECT count(1) into V_COUNT_RTC FROM ACCOUNT_SUBSCRIBER R WHERE RANGE_MAP_EXTERNAL_ID = '66'||DAT.EXTERNAL_ID;
-              IF V_COUNT_RTC > 0 THEN
---                DBMS_OUTPUT.PUT_LINE( 'err : ' || DAT.EXTERNAL_ID);
-                SELECT PAYMENT_MODE1 , CURRENT_STATE INTO PAYMENT_MODE1 , CURRENT_STATE 
-                from ( 
-                  SELECT *  
-                  FROM ACCOUNT_SUBSCRIBER R 
-                  WHERE RANGE_MAP_EXTERNAL_ID = '66'||DAT.EXTERNAL_ID  
-                  ORDER BY CREATION_DATE DESC
-                )
-                where rowNum <= 1;
-              end if;
+              
               V_INVENTORY_TYPE_ID := DAT.INVENTORY_TYPE_ID;
               V_VIEW_LOOP_INDEX := 1;
               FOR viewData in C_INVD_VIEWS
@@ -93,8 +82,9 @@ BEGIN
               END LOOP;
               
                select STATUS_ID into V_STATUS_ID from INVD_VIEWS  
-               where INVENTORY_ID = DAT.INVENTORY_TYPE_ID
-               AND END_DATE_TIME IS NULL;
+               where INVENTORY_ID = DAT.INVENTORY_ID
+               AND END_DATE_TIME IS NULL
+               and rowNum <= 1;
               init_data.PIN1 := null;
               init_data.PIN2 := null;
               init_data.PUK1 := null;
@@ -103,6 +93,18 @@ BEGIN
               init_data_profile.PAYMENT_MODE := null;
               Update INVD_MAIN m set m.MIGRATE = 9 where m.rowid = DAT.rowid;
               IF DAT.INVENTORY_TYPE_ID = '201' THEN
+                SELECT count(1) into V_COUNT_RTC FROM ACCOUNT_SUBSCRIBER R WHERE RANGE_MAP_EXTERNAL_ID = '66'||DAT.EXTERNAL_ID;
+                IF V_COUNT_RTC > 0 THEN
+  --                DBMS_OUTPUT.PUT_LINE( 'err : ' || DAT.EXTERNAL_ID);
+                  SELECT PAYMENT_MODE1 , CURRENT_STATE INTO PAYMENT_MODE1 , CURRENT_STATE 
+                  from ( 
+                    SELECT *  
+                    FROM ACCOUNT_SUBSCRIBER R 
+                    WHERE RANGE_MAP_EXTERNAL_ID = '66'||DAT.EXTERNAL_ID  
+                    ORDER BY CREATION_DATE DESC
+                  )
+                  where rowNum <= 1;
+                end if;
                 IF REGEXP_SUBSTR (DAT.EXTERNAL_ID, '\d{9}') is null or  length(DAT.EXTERNAL_ID) <> 9 THEN 
                   CONTINUE; 
                 end if;
@@ -217,6 +219,20 @@ BEGIN
                
                 
              ELSIF DAT.INVENTORY_TYPE_ID = '101'  THEN
+
+                SELECT count(1) into V_COUNT_RTC FROM ACCOUNT_SUBSCRIBER R WHERE ADDTL_NOTIF_EXTERNAL_ID = DAT.EXTERNAL_ID;
+                IF V_COUNT_RTC > 0 THEN
+  --                DBMS_OUTPUT.PUT_LINE( 'err : ' || DAT.EXTERNAL_ID);
+                  SELECT PAYMENT_MODE1 , CURRENT_STATE INTO PAYMENT_MODE1 , CURRENT_STATE 
+                  from ( 
+                    SELECT *  
+                    FROM ACCOUNT_SUBSCRIBER R 
+                    WHERE ADDTL_NOTIF_EXTERNAL_ID = DAT.EXTERNAL_ID  
+                    ORDER BY CREATION_DATE DESC
+                  )
+                  where rowNum <= 1;
+                end if;
+
                 IF SUBSTR(DAT.EXTERNAL_ID , 0 , 2 ) <> '52' then
                   CONTINUE; 
                 END IF;
@@ -261,12 +277,15 @@ BEGIN
                     init_data_profile.STATUS := 1;
                   END IF;
                 END IF;
+                if V_COUNT_RTC = 0 THEN
+                  init_data_profile.STATUS := 1;
+                end if;
               END IF;
   --            DBMS_OUTPUT.PUT_LINE( 'EXTERNAL_ID:' || DAT.EXTERNAL_ID || ',SECONDARY_CODE' || DAT.SECONDARY_CODE);
               
               IF V_STATUS_ID = 14 THEN
                 init_data_profile.STATUS := 4;
-              ELSIF V_STATUS_ID <> 8 OR V_STATUS_ID <> 14 THEN
+              ELSIF V_STATUS_ID <> 8 AND V_STATUS_ID <> 14 THEN
               init_data_profile.STATUS := V_STATUS_ID;
               END IF;
               
@@ -318,10 +337,10 @@ BEGIN
               
               init_data.EXTN_ID_TYPE := DAT.INVENTORY_TYPE_ID;
               
-              if init_data_profile.PAYMENT_MODE = 1 and init_data_profile.STATUS = 8 then --FIX 8 ==> 1 2020/11/06
+               if init_data_profile.PAYMENT_MODE = 1 and init_data_profile.STATUS = 8 then --FIX 8 ==> 1 2020/11/06
                 init_data_profile.STATUS := 1; 
               end if;
-
+              
               INSERT INTO invuser.TEST_INV_MASTER 
               ( MASTER_ID, CREATED_DATE, UPDATED_DATE, CREATED_BY, UPDATED_BY, IS_ACTIVE, REMARK, EXTERNAL_ID, EXTN_ID_TYPE, MVNO_ID, OPERATOR_ID, PIN1, PIN2, PUK1, PUK2, SECONDARY_CODE, ZONE_ID, IMSI, NUMBER_TYPE, SIM_FLAG, SIM_CODE, DIGIT ) 
               VALUES 
