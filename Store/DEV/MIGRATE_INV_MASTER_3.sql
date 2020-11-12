@@ -146,6 +146,7 @@ BEGIN
                   init_data_profile.LUCKY_NUMBER := 1;
                   ELSE
                    init_data_profile.LUCKY_NUMBER := 0;
+                   init_data_profile.LUCKY_NUMBER_LEVEL := 0;
                 END IF;
                 
                

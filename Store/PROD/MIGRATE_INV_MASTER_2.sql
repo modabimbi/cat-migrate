@@ -89,6 +89,7 @@ BEGIN
               init_data.PIN2 := null;
               init_data.PUK1 := null;
               init_data.PUK2 := null;
+              init_data.ZONE_ID := null;
               init_data.MVNO_ID := '999';
               init_data_profile.PAYMENT_MODE := null;
               Update INVD_MAIN m set m.MIGRATE = 9 where m.rowid = DAT.rowid;
@@ -109,43 +110,54 @@ BEGIN
                   CONTINUE; 
                 end if;
                 init_data.EXTERNAL_ID := DAT.EXTERNAL_ID;
-                init_data.OPERATOR_ID := 0;
+                init_data.OPERATOR_ID := null;
                 init_data.DIGIT := 2;
                 init_data.IMSI := null;
                 init_data.SECONDARY_CODE := null;
                 init_data.SIM_CODE := null;
                 init_data.SIM_FLAG := null;
                 init_data.NUMBER_TYPE := 1;
+
+                if DAT.PORTABILITY_INDICATOR = 1 then
+                  init_data.OPERATOR_ID := 1;
+                elsif DAT.PORTABILITY_INDICATOR = 0 then
+                  init_data.OPERATOR_ID := 0;
+                end if;
                
                 
                 init_data_profile.FLAG_VIP := 0;
+                
                 IF PAYMENT_MODE1 = '1' THEN 
                   init_data_profile.PAYMENT_MODE := 0;
                 ELSIF PAYMENT_MODE1 = '2' THEN
                   init_data_profile.PAYMENT_MODE := 1;
-                else
-                   if DAT.EQUIPMENT_CONDITION_ID = 4 then
-                     init_data_profile.PAYMENT_MODE := 1;
-                   elsif DAT.EQUIPMENT_CONDITION_ID = 5 then
-                     init_data_profile.PAYMENT_MODE := 0;
-                   end if;
+                ELSE
+                  IF DAT.EQUIPMENT_CONDITION_ID = 4 then
+                    init_data_profile.PAYMENT_MODE := 1;
+                  elsif DAT.EQUIPMENT_CONDITION_ID = 5 then
+                    init_data_profile.PAYMENT_MODE := 0;
+                    END IF;
                 END IF;
-                init_data_profile.LUCKY_NUMBER_LEVEL := DAT.PROFILE_ID;
+               
+                -- init_data_profile.LUCKY_NUMBER_LEVEL := DAT.PROFILE_ID;
                 IF DAT.SALES_CHANNEL_ID is null THEN
                   init_data_profile.SALE_CHANEL := 7;
                 
                 else 
                   if DAT.SALES_CHANNEL_ID = 1 then
                      init_data_profile.SALE_CHANEL := 7;
-                  else
-                      init_data_profile.SALE_CHANEL := DAT.SALES_CHANNEL_ID;
-                  end if;
+                  -- 20201112
+                  -- else
+                  --     init_data_profile.SALE_CHANEL := DAT.SALES_CHANNEL_ID;
+                   end if;
                 END IF;
                 
                 IF DAT.SALES_CHANNEL_ID = '5' or DAT.SALES_CHANNEL_ID = '55' THEN
                   init_data_profile.LUCKY_NUMBER := 1;
+                  init_data_profile.LUCKY_NUMBER_LEVEL := null;
                   ELSE
                    init_data_profile.LUCKY_NUMBER := 0;
+                   init_data_profile.LUCKY_NUMBER_LEVEL := 0;
                 END IF;
                 
                
@@ -159,9 +171,9 @@ BEGIN
                 else
                   init_data_profile.NON_CHARGE := 1;
                 END IF;
-                
-                IF V_STATUS_ID = 8 THEN
---                  PAYMENT_MODE1 , CURRENT_STATE
+
+                IF V_COUNT_RTC > 0 then
+                  IF V_STATUS_ID = 8 THEN
                   IF PAYMENT_MODE1 = 1 AND CURRENT_STATE = 1 THEN
                     init_data_profile.STATUS := 16;
                   ELSIF PAYMENT_MODE1 = 1 AND CURRENT_STATE <> 1 THEN
@@ -170,6 +182,10 @@ BEGIN
                     init_data_profile.STATUS := 1;
                   END IF;
                 END IF;
+                ELSE 
+                  init_data_profile.STATUS := 1;
+                END IF;
+                
                 
                 select count(1) into V_COUNT_ASSIGNED from MVNO_ASSIGNED_NUMBER where TN = '0'||DAT.EXTERNAL_ID;
                 IF V_COUNT_ASSIGNED > 0 THEN
@@ -231,6 +247,8 @@ BEGIN
                     ORDER BY CREATION_DATE DESC
                   )
                   where rowNum <= 1;
+
+                 
                 end if;
 
                 IF SUBSTR(DAT.EXTERNAL_ID , 0 , 2 ) <> '52' then
@@ -267,16 +285,21 @@ BEGIN
                   init_data_profile.OWNER := DAT.RESPONSIBLE_PARTY_ID;
                 END IF;
                 
-                IF V_STATUS_ID = 8 THEN
---                  PAYMENT_MODE1 , CURRENT_STATE
-                  IF PAYMENT_MODE1 = 1 AND CURRENT_STATE = 1 THEN
-                    init_data_profile.STATUS := 16;
-                  ELSIF PAYMENT_MODE1 = 1 AND CURRENT_STATE <> 1 THEN
-                    init_data_profile.STATUS := 8;
-                  ELSE 
-                    init_data_profile.STATUS := 1;
+                IF V_COUNT_RTC > 0 then
+                  IF V_STATUS_ID = 8 THEN
+  --                  PAYMENT_MODE1 , CURRENT_STATE
+                    IF PAYMENT_MODE1 = 1 AND CURRENT_STATE = 1 THEN
+                      init_data_profile.STATUS := 16;
+                    ELSIF PAYMENT_MODE1 = 1 AND CURRENT_STATE <> 1 THEN
+                      init_data_profile.STATUS := 8;
+                    ELSE 
+                      init_data_profile.STATUS := 1;
+                    END IF;
                   END IF;
+                ELSE
+                  init_data_profile.STATUS := 1;
                 END IF;
+
                 if V_COUNT_RTC = 0 THEN
                   init_data_profile.STATUS := 1;
                 end if;
@@ -333,6 +356,8 @@ BEGIN
                 init_data.ZONE_ID := 6;
               elsif DAT.GEOGRAPHIC_REGION_ID = 6 then
                 init_data.ZONE_ID := 7;
+              else
+                init_data.ZONE_ID := 1;
               end if;
               
               init_data.EXTN_ID_TYPE := DAT.INVENTORY_TYPE_ID;

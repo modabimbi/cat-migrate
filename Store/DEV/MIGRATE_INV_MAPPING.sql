@@ -33,7 +33,7 @@ BEGIN
             
             init_data.IMSI := DAT.ADDTL_NOTIF_EXTERNAL_ID;
             init_data.IS_ACTIVE := 'Y';
-            init_data.MAPPING_STATUS := NULL;
+            init_data.MAPPING_STATUS := 2; -- null to 2 10-11-2020
             init_data.MULTISIM_FLAG := 1;
             init_data.REMARK := NULL;
             select invuser.TEST_INVMAPPING_SEQ.nextval into init_data.MAPPING_ID from dual;
