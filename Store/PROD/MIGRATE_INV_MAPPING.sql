@@ -9,7 +9,7 @@ create or replace PROCEDURE MIGRATE_INV_MAPPING AS
  V_DIFF number(16,0) := 0;
  init_data invuser.INV_MAPPING%ROWTYPE;
  CURSOR C_MAIN_DATA IS
-  select RANGE_MAP_EXTERNAL_ID, ADDTL_NOTIF_EXTERNAL_ID , rowid
+  select RANGE_MAP_EXTERNAL_ID, ADDTL_NOTIF_EXTERNAL_ID , rowid row_id
     from TEMP_MIGRATE_INV_MAPPING  
     where MIGRATE = 1
     and rowNum <= V_LIMITLOOP;
@@ -55,7 +55,7 @@ BEGIN
             ( MAPPING_ID, CREATED_DATE, UPDATED_DATE, CREATED_BY, UPDATED_BY, IS_ACTIVE, REMARK, EXTERNAL_ID, MAPPING_STATUS, MULTISIM_FLAG, SECONDARY_CODE, IMSI ) 
             VALUES 
             ( init_data.MAPPING_ID, init_data.CREATED_DATE, init_data.UPDATED_DATE, init_data.CREATED_BY, init_data.UPDATED_BY, init_data.IS_ACTIVE, init_data.REMARK, init_data.EXTERNAL_ID, init_data.MAPPING_STATUS, init_data.MULTISIM_FLAG, init_data.SECONDARY_CODE, init_data.IMSI );
-            update TEMP_MIGRATE_INV_MAPPING set MIGRATE = 2 where ROWID = dat.rowid;
+            update TEMP_MIGRATE_INV_MAPPING set MIGRATE = 2 where ROWID = dat.row_id;
          END LOOP;
           IF C_MAIN_DATA%ROWCOUNT = 0 then
              V_ENDLOOP := TRUE;
