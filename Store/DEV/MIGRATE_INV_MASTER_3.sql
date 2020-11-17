@@ -31,6 +31,7 @@ create or replace PROCEDURE MIGRATE_INV_MASTER_3 AS
   V_COUNT_NEW number(16,0) := 0;
   V_DIFF number(16,0) := 0;
   PAYMENT_MODE1 VARCHAR2(20) := '';
+  RANGE_MAP_EXTERNAL_ID VARCHAR2(30) := '';
   CURRENT_STATE  NUMBER(3,0) := 0;
   V_STATUS_ID NUMBER(10,0) := 0;
   V_VIEW_LOOP_INDEX number(5) := 0;
@@ -149,8 +150,8 @@ BEGIN
                   if DAT.SALES_CHANNEL_ID = 1 then
                      init_data_profile.SALE_CHANEL := 7;
                   -- 20201112
-                  -- else
-                  --     init_data_profile.SALE_CHANEL := DAT.SALES_CHANNEL_ID;
+                  else
+                      init_data_profile.SALE_CHANEL := DAT.SALES_CHANNEL_ID;
                    end if;
                 END IF;
                 
@@ -306,7 +307,7 @@ BEGIN
                 SELECT count(1) into V_COUNT_RTC FROM ACCOUNT_SUBSCRIBER R WHERE ADDTL_NOTIF_EXTERNAL_ID = DAT.EXTERNAL_ID;
                 IF V_COUNT_RTC > 0 THEN
   --                DBMS_OUTPUT.PUT_LINE( 'err : ' || DAT.EXTERNAL_ID);
-                  SELECT PAYMENT_MODE1 , CURRENT_STATE INTO PAYMENT_MODE1 , CURRENT_STATE 
+                  SELECT PAYMENT_MODE1 , CURRENT_STATE , RANGE_MAP_EXTERNAL_ID INTO PAYMENT_MODE1 , CURRENT_STATE , RANGE_MAP_EXTERNAL_ID
                   from ( 
                     SELECT *  
                     FROM ACCOUNT_SUBSCRIBER R 
@@ -348,8 +349,10 @@ BEGIN
                 init_data_profile.PAYMENT_MODE := NULL;
                
                 
-                IF V_COUNT_RTC > 0 then
-                  init_data_profile.OWNER := DAT.RESPONSIBLE_PARTY_ID;
+               IF V_COUNT_RTC > 0 then
+                  select RESPONSIBLE_PARTY_ID into init_data_profile.OWNER from INVD_MAIN 
+                  where EXTERNAL_ID = SUBSTR(RANGE_MAP_EXTERNAL_ID,3,9)
+                  and rownum <= 1;
                 else
                   init_data_profile.OWNER := 2;
                 END IF;
