@@ -29,7 +29,8 @@ CREATE TABLE TEMP_MIGRATE_INV_MAPPING
   AS (
     select DISTINCT A.Range_Map_External_ID , A.ADDTL_NOTIF_EXTERNAL_ID , 1 MIGRATE
     from ACCOUNT_SUBSCRIBER A 
-    where ( Range_Map_External_ID is not null or ADDTL_NOTIF_EXTERNAL_ID is not null)
+    where Range_Map_External_ID is not null 
+    and ADDTL_NOTIF_EXTERNAL_ID is not null
     AND SUBSTR(ADDTL_NOTIF_EXTERNAL_ID , 0 , 2 ) = '52' 
   );
   CREATE INDEX TEMP_MIGRATE_INV_MAPPING_IDX1 ON TEMP_MIGRATE_INV_MAPPING (MIGRATE);

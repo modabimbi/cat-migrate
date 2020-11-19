@@ -7,7 +7,7 @@ create or replace PROCEDURE MIGRATE_INV_MAPPING AS
 
 
  V_DIFF number(16,0) := 0;
- init_data invuser.INV_MAPPING%ROWTYPE;
+ init_data INVUSER.INV_MAPPING%ROWTYPE;
  CURSOR C_MAIN_DATA IS
   select RANGE_MAP_EXTERNAL_ID, ADDTL_NOTIF_EXTERNAL_ID , rowid row_id
     from TEMP_MIGRATE_INV_MAPPING  
@@ -35,7 +35,7 @@ BEGIN
             init_data.MAPPING_STATUS := 2; -- null to 2 10-11-2020
             init_data.MULTISIM_FLAG := 1;
             init_data.REMARK := NULL;
-            select invuser.INVMAPPING_SEQ.nextval into init_data.MAPPING_ID from dual;
+            select INVUSER.INVMAPPING_SEQ.nextval into init_data.MAPPING_ID from dual;
             init_data.UPDATED_BY := null;
             init_data.UPDATED_DATE := null;
             init_data.SECONDARY_CODE := null;
@@ -51,7 +51,7 @@ BEGIN
               select SECONDARY_CODE into init_data.SECONDARY_CODE from INVD_MAIN where EXTERNAL_ID = DAT.ADDTL_NOTIF_EXTERNAL_ID and INVENTORY_TYPE_ID = '101';
 
             end if;
-            INSERT INTO invuser.INV_MAPPING 
+            INSERT INTO INVUSER.INV_MAPPING 
             ( MAPPING_ID, CREATED_DATE, UPDATED_DATE, CREATED_BY, UPDATED_BY, IS_ACTIVE, REMARK, EXTERNAL_ID, MAPPING_STATUS, MULTISIM_FLAG, SECONDARY_CODE, IMSI ) 
             VALUES 
             ( init_data.MAPPING_ID, init_data.CREATED_DATE, init_data.UPDATED_DATE, init_data.CREATED_BY, init_data.UPDATED_BY, init_data.IS_ACTIVE, init_data.REMARK, init_data.EXTERNAL_ID, init_data.MAPPING_STATUS, init_data.MULTISIM_FLAG, init_data.SECONDARY_CODE, init_data.IMSI );
