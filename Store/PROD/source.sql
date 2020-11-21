@@ -42,14 +42,14 @@ update INVD_MAIN M set MIGRATE = 1
   WHERE M.MIGRATE is null
   AND M.INVENTORY_TYPE_ID <> '301'
   AND EXTERNAL_ID NOT LIKE 'OLD%'
-  and rownum <= 3900000;
+  and rownum <= 3910000;
 
 
 update INVD_MAIN M set MIGRATE = 2  
   WHERE M.MIGRATE is null
   AND M.INVENTORY_TYPE_ID <> '301'
   AND EXTERNAL_ID NOT LIKE 'OLD%'
-  and rownum <= 3900000;
+  and rownum <= 3910000;
   
 
 update INVD_MAIN M set MIGRATE = 3  

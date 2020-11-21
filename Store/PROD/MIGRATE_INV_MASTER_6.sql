@@ -1,4 +1,4 @@
-create or replace PROCEDURE MIGRATE_INV_MASTER_1 AS 
+create or replace PROCEDURE MIGRATE_INV_MASTER_6 AS 
  V_LIMITLOOP NUMBER:= 20000;
  V_ENDLOOP BOOLEAN := FALSE;
 
@@ -9,7 +9,7 @@ create or replace PROCEDURE MIGRATE_INV_MASTER_1 AS
 
  CURSOR C_MAIN_DATA IS
   SELECT rowid,M.* FROM INVD_MAIN M 
-  WHERE M.MIGRATE = 1
+  WHERE M.MIGRATE = 6
   AND M.INVENTORY_TYPE_ID <> '301'
   AND EXTERNAL_ID NOT LIKE 'OLD%'
   AND ROWNUM <= V_LIMITLOOP;
@@ -44,7 +44,7 @@ BEGIN
 --  FROM INVD_MAIN
 --  where INVENTORY_TYPE_ID <> '301'
 --  AND EXTERNAL_ID NOT LIKE 'OLD%';
-  DBMS_OUTPUT.PUT_LINE( 'START MIGRATE_INV_MASTER_1 : ' || to_char(sysdate , 'dd/mm/yyyy hh24:mi'));
+  DBMS_OUTPUT.PUT_LINE( 'START MIGRATE_INV_MASTER_6 : ' || to_char(sysdate , 'dd/mm/yyyy hh24:mi'));
   WHILE V_ENDLOOP = FALSE
   LOOP
     BEGIN
@@ -544,7 +544,7 @@ BEGIN
 
 
   END LOOP;
-  --DBMS_OUTPUT.PUT_LINE( 'End' || to_char(sysdate , 'dd/mm/yyyy hh24:mi'));
+  DBMS_OUTPUT.PUT_LINE( 'End' || to_char(sysdate , 'dd/mm/yyyy hh24:mi'));
 
 
-END MIGRATE_INV_MASTER_1;
+END MIGRATE_INV_MASTER_6;

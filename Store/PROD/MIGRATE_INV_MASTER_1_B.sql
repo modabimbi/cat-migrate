@@ -544,7 +544,7 @@ BEGIN
 
 
   END LOOP;
-  --DBMS_OUTPUT.PUT_LINE( 'End' || to_char(sysdate , 'dd/mm/yyyy hh24:mi'));
+  DBMS_OUTPUT.PUT_LINE( 'End' || to_char(sysdate , 'dd/mm/yyyy hh24:mi'));
 
 
 END MIGRATE_INV_MASTER_1;

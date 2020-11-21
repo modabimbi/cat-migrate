@@ -63,9 +63,11 @@ BEGIN
 
 
             begin
-
+              init_data_profile := null;
+              init_data := null;
               select INVUSER.INVMASTER_SEQ.nextval into MASTER_ID from dual;
               select INVUSER.INVMASTERPROFILE_SEQ.nextval into init_data_profile.MASTER_PROFILE_ID from dual;
+              init_data_profile.STATUS := null;
               PAYMENT_MODE1 := null;
               CURRENT_STATE := null;
               V_COUNT_RTC := 0;
@@ -102,7 +104,7 @@ BEGIN
                   from ( 
                     SELECT *  
                     FROM ACCOUNT_SUBSCRIBER R 
-                    WHERE RANGE_MAP_EXTERNAL_ID = '66'||DAT.EXTERNAL_ID  
+                    WHERE DAT.EXTERNAL_ID = SUBSTR(R.RANGE_MAP_EXTERNAL_ID,3,9) 
                     ORDER BY CREATION_DATE DESC
                   )
                   where rowNum <= 1;
@@ -180,82 +182,82 @@ BEGIN
                   init_data_profile.NON_CHARGE := 1;
                 END IF;
 
-                IF V_COUNT_RTC > 0 then
-                  IF (V_STATUS_ID = 1 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 1 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 1 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 1 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 1 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 1 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 1 AND CURRENT_STATE = 7 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 1 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 53 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 53 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 7 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 53 AND PAYMENT_MODE1 is null )
-                    or (V_STATUS_ID = 4 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 4 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 8 AND CURRENT_STATE = 7 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 13 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 13 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 13 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 2 )
-                  then
-                    init_data_profile.STATUS := 4;
-                  elsif (V_STATUS_ID = 4 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null ) then 
-                    init_data_profile.STATUS := 2;
-                  elsif (V_STATUS_ID = 1 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null )
-                    or (V_STATUS_ID = 8 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null )
-                  then
-                    init_data_profile.STATUS := 1;
-                  elsif (V_STATUS_ID = 3 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null ) then
-                    init_data_profile.STATUS := 3;
-                  elsif (V_STATUS_ID = 10 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null ) then
-                    init_data_profile.STATUS := 10;
-                  elsif (V_STATUS_ID = 7 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 7 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null )
-                    or (V_STATUS_ID = 7 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
-                  then 
-                    init_data_profile.STATUS := 10;
-                  elsif (V_STATUS_ID = 1 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 1 AND CURRENT_STATE = 3 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 1 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 3 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 3 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 4 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 8 AND CURRENT_STATE = 3 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 8 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 11 AND CURRENT_STATE = 3 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 13 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 13 AND CURRENT_STATE = 3 AND PAYMENT_MODE1 = 1 )
-                  then 
-                    init_data_profile.STATUS := 16;
-                  elsif (V_STATUS_ID = 15 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null ) then
-                    init_data_profile.STATUS := 15;
-                  elsif (V_STATUS_ID = 11 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null )
-                  or (V_STATUS_ID = 11 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
-                  then
-                    init_data_profile.STATUS := 11;
-                  elsif (V_STATUS_ID = 13 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null ) then
-                   init_data_profile.STATUS := 13;
-                  elsif (V_STATUS_ID = 12 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null ) then
-                    init_data_profile.STATUS := 12;
-                  end if;
-
-
-                ELSE 
+                
+                IF (V_STATUS_ID = 1 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 1 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 1 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 1 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 1 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 1 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 1 AND CURRENT_STATE = 7 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 1 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 53 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 53 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 7 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 53 AND PAYMENT_MODE1 is null )
+                  or (V_STATUS_ID = 4 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 4 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 8 AND CURRENT_STATE = 7 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 13 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 13 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 13 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 2 )
+                then
+                  init_data_profile.STATUS := 2;
+                elsif (V_STATUS_ID = 4 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null ) then 
+                  init_data_profile.STATUS := 4;
+                elsif (V_STATUS_ID = 1 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null )
+                  or (V_STATUS_ID = 8 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null )
+                then
                   init_data_profile.STATUS := 1;
-                END IF;
+                elsif (V_STATUS_ID = 3 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null ) then
+                  init_data_profile.STATUS := 3;
+                elsif (V_STATUS_ID = 10 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null ) then
+                  init_data_profile.STATUS := 10;
+                elsif (V_STATUS_ID = 7 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 7 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null )
+                  or (V_STATUS_ID = 7 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
+                then 
+                  init_data_profile.STATUS := 10;
+                elsif (V_STATUS_ID = 1 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 1 AND CURRENT_STATE = 3 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 1 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 3 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 3 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 4 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 8 AND CURRENT_STATE = 3 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 8 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 11 AND CURRENT_STATE = 3 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 13 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 13 AND CURRENT_STATE = 3 AND PAYMENT_MODE1 = 1 )
+                then 
+                  init_data_profile.STATUS := 16;
+                elsif (V_STATUS_ID = 15 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null ) then
+                  init_data_profile.STATUS := 15;
+                elsif (V_STATUS_ID = 11 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null )
+                or (V_STATUS_ID = 11 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
+                then
+                  init_data_profile.STATUS := 11;
+                elsif (V_STATUS_ID = 13 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null ) then
+                  init_data_profile.STATUS := 13;
+                elsif (V_STATUS_ID = 12 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null ) then
+                  init_data_profile.STATUS := 12;
+                else
+                  init_data_profile.STATUS := 2;
+                end if;
+
+
+                
 
 
                 select count(1) into V_COUNT_ASSIGNED from MVNO_ASSIGNED_NUMBER where TN = '0'||DAT.EXTERNAL_ID;
@@ -366,88 +368,86 @@ BEGIN
                   init_data_profile.OWNER := 2;
                 END IF;
 
-                IF V_COUNT_RTC > 0 then
-
-                  IF (V_STATUS_ID = 1 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 1 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 1 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 1 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 1 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 1 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 1 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 1 AND CURRENT_STATE = 7 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 3 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 53 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 7 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 2 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 4 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 4 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 4 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 4 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 5 AND CURRENT_STATE = 7 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 5 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 5 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 5 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 5 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 5 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 5 AND CURRENT_STATE = 53 AND PAYMENT_MODE1 = (null) )
-                    or (V_STATUS_ID = 5 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 5 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 5 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 5 AND CURRENT_STATE = 53 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 8 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 8 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 8 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 8 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 8 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 8 AND CURRENT_STATE = 7 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 8 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 8 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 9 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 9 AND CURRENT_STATE = 7 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 9 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 9 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 9 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 9 AND CURRENT_STATE = 53 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 9 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 9 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 1 )
-                  THEN
-                    init_data_profile.STATUS := 2;
-                  ELSIF (V_STATUS_ID = 1 AND CURRENT_STATE = (null) AND PAYMENT_MODE1 = (null) )
-                    or (V_STATUS_ID = 8 AND CURRENT_STATE = (null) AND PAYMENT_MODE1 = (null) )
-                  THEN
-                    init_data_profile.STATUS := 1;
-                  ELSIF (V_STATUS_ID = 2 AND CURRENT_STATE = (null) AND PAYMENT_MODE1 = (null) )
-                    or (V_STATUS_ID = 4 AND CURRENT_STATE = (null) AND PAYMENT_MODE1 = (null) )
-                    or (V_STATUS_ID = 5 AND CURRENT_STATE = (null) AND PAYMENT_MODE1 = (null) )
-                  THEN
-                    init_data_profile.STATUS := 5;
-                  ELSIF (V_STATUS_ID = 1 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 1 AND CURRENT_STATE = 3 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 5 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 2 )
-                    or (V_STATUS_ID = 5 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 8 AND CURRENT_STATE = 3 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 8 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
-                    or (V_STATUS_ID = 9 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
-                  THEN
-                    init_data_profile.STATUS := 16;
-                  ELSIF (V_STATUS_ID = 9 AND CURRENT_STATE = (null) AND PAYMENT_MODE1 = (null) )
-                  THEN
-                    init_data_profile.STATUS := 9;
-                  END IF;
-                ELSE
+                
+                IF (V_STATUS_ID = 1 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 1 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 1 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 1 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 1 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 1 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 1 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 1 AND CURRENT_STATE = 7 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 3 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 53 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 7 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 2 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 4 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 4 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 4 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 4 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 5 AND CURRENT_STATE = 7 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 5 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 5 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 5 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 5 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 5 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 5 AND CURRENT_STATE = 53 AND PAYMENT_MODE1 is null )
+                  or (V_STATUS_ID = 5 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 5 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 5 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 5 AND CURRENT_STATE = 53 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 8 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 8 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 8 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 8 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 8 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 8 AND CURRENT_STATE = 7 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 8 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 8 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 9 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 9 AND CURRENT_STATE = 7 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 9 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 9 AND CURRENT_STATE = 51 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 9 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 9 AND CURRENT_STATE = 53 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 9 AND CURRENT_STATE = 52 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 9 AND CURRENT_STATE = 50 AND PAYMENT_MODE1 = 1 )
+                THEN
+                  init_data_profile.STATUS := 2;
+                ELSIF (V_STATUS_ID = 1 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null )
+                  or (V_STATUS_ID = 8 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null )
+                THEN
                   init_data_profile.STATUS := 1;
+                ELSIF (V_STATUS_ID = 2 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null )
+                  or (V_STATUS_ID = 4 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null )
+                  or (V_STATUS_ID = 5 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null )
+                THEN
+                  init_data_profile.STATUS := 5;
+                ELSIF (V_STATUS_ID = 1 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 1 AND CURRENT_STATE = 3 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 5 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 2 )
+                  or (V_STATUS_ID = 5 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 8 AND CURRENT_STATE = 3 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 8 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
+                  or (V_STATUS_ID = 9 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
+                THEN
+                  init_data_profile.STATUS := 16;
+                ELSIF (V_STATUS_ID = 9 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null )
+                THEN
+                  init_data_profile.STATUS := 9;
+                else 
+                  init_data_profile.STATUS := 2;
                 END IF;
-
+                
 
               END IF;
   --            DBMS_OUTPUT.PUT_LINE( 'EXTERNAL_ID:' || DAT.EXTERNAL_ID || ',SECONDARY_CODE' || DAT.SECONDARY_CODE);
@@ -508,9 +508,9 @@ BEGIN
 
               init_data.EXTN_ID_TYPE := DAT.INVENTORY_TYPE_ID;
 
-               if init_data_profile.PAYMENT_MODE = 1 and init_data_profile.STATUS = 8 then --FIX 8 ==> 1 2020/11/06
-                init_data_profile.STATUS := 1; 
-              end if;
+              --  if init_data_profile.PAYMENT_MODE = 1 and init_data_profile.STATUS = 8 then --FIX 8 ==> 1 2020/11/06
+              --   init_data_profile.STATUS := 1; 
+              -- end if;
 
               INSERT INTO INVUSER.INV_MASTER 
               ( MASTER_ID, CREATED_DATE, UPDATED_DATE, CREATED_BY, UPDATED_BY, IS_ACTIVE, REMARK, EXTERNAL_ID, EXTN_ID_TYPE, MVNO_ID, OPERATOR_ID, PIN1, PIN2, PUK1, PUK2, SECONDARY_CODE, ZONE_ID, IMSI, NUMBER_TYPE, SIM_FLAG, SIM_CODE, DIGIT ) 
@@ -544,7 +544,7 @@ BEGIN
 
 
   END LOOP;
-  DBMS_OUTPUT.PUT_LINE( 'End' || to_char(sysdate , 'dd/mm/yyyy hh24:mi'));
+  --DBMS_OUTPUT.PUT_LINE( 'End' || to_char(sysdate , 'dd/mm/yyyy hh24:mi'));
 
 
 END MIGRATE_INV_MASTER_3;
