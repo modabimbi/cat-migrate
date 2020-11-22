@@ -226,7 +226,7 @@ BEGIN
                   or (V_STATUS_ID = 7 AND CURRENT_STATE is null AND PAYMENT_MODE1 is null )
                   or (V_STATUS_ID = 7 AND CURRENT_STATE = 2 AND PAYMENT_MODE1 = 2 )
                 then 
-                  init_data_profile.STATUS := 10;
+                  init_data_profile.STATUS := 7;
                 elsif (V_STATUS_ID = 1 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 )
                   or (V_STATUS_ID = 1 AND CURRENT_STATE = 3 AND PAYMENT_MODE1 = 1 )
                   or (V_STATUS_ID = 1 AND CURRENT_STATE = 1 AND PAYMENT_MODE1 = 2 )
