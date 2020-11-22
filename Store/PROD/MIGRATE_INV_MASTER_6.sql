@@ -104,7 +104,7 @@ BEGIN
                   from ( 
                     SELECT *  
                     FROM ACCOUNT_SUBSCRIBER R 
-                    WHERE DAT.EXTERNAL_ID = SUBSTR(R.RANGE_MAP_EXTERNAL_ID,3,9) 
+                    WHERE RANGE_MAP_EXTERNAL_ID = '66'||DAT.EXTERNAL_ID 
                     ORDER BY CREATION_DATE DESC
                   )
                   where rowNum <= 1;
@@ -452,11 +452,11 @@ BEGIN
               END IF;
   --            DBMS_OUTPUT.PUT_LINE( 'EXTERNAL_ID:' || DAT.EXTERNAL_ID || ',SECONDARY_CODE' || DAT.SECONDARY_CODE);
 
-              IF V_STATUS_ID = 14 THEN
-                init_data_profile.STATUS := 4;
-              ELSIF V_STATUS_ID <> 8 AND V_STATUS_ID <> 14 THEN
-              init_data_profile.STATUS := V_STATUS_ID;
-              END IF;
+              -- IF V_STATUS_ID = 14 THEN
+              --   init_data_profile.STATUS := 4;
+              -- ELSIF V_STATUS_ID <> 8 AND V_STATUS_ID <> 14 THEN
+              -- init_data_profile.STATUS := V_STATUS_ID;
+              -- END IF;
 
               init_data.MASTER_ID := MASTER_ID;
               init_data.CREATED_DATE := SYSDATE;
@@ -544,7 +544,7 @@ BEGIN
 
 
   END LOOP;
-  DBMS_OUTPUT.PUT_LINE( 'End' || to_char(sysdate , 'dd/mm/yyyy hh24:mi'));
+  --DBMS_OUTPUT.PUT_LINE( 'End' || to_char(sysdate , 'dd/mm/yyyy hh24:mi'));
 
 
 END MIGRATE_INV_MASTER_6;
