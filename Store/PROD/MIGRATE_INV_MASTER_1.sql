@@ -84,9 +84,11 @@ BEGIN
                 V_VIEW_LOOP_INDEX := V_VIEW_LOOP_INDEX+1;
               END LOOP;
 
-               select STATUS_ID into V_STATUS_ID from INVD_VIEWS  
-               where INVENTORY_ID = DAT.INVENTORY_ID
-               AND END_DATE_TIME IS NULL
+               select STATUS_ID into V_STATUS_ID  from(
+                  select STATUS_ID from INVD_VIEWS  
+                  where INVENTORY_ID = DAT.INVENTORY_ID
+                  AND END_DATE_TIME IS NULL
+                  order by VIEW_ID desc
                and rowNum <= 1;
               init_data.PIN1 := null;
               init_data.PIN2 := null;
