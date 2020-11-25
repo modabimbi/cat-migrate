@@ -15,6 +15,7 @@ create or replace PROCEDURE MIGRATE_INV_MASTER_4 AS
   AND ROWNUM <= V_LIMITLOOP;
 
   V_INVENTORY_TYPE_ID varchar(3) := '';
+
   CURSOR C_INVD_VIEWS IS
      select * from INVD_VIEWS 
      where INVENTORY_ID = V_INVENTORY_TYPE_ID
@@ -84,10 +85,12 @@ BEGIN
                 V_VIEW_LOOP_INDEX := V_VIEW_LOOP_INDEX+1;
               END LOOP;
 
-               select STATUS_ID into V_STATUS_ID from INVD_VIEWS  
-               where INVENTORY_ID = DAT.INVENTORY_ID
-               AND END_DATE_TIME IS NULL
-               and rowNum <= 1;
+              select STATUS_ID into V_STATUS_ID  from(
+                  select STATUS_ID from INVD_VIEWS  
+                  where INVENTORY_ID = DAT.INVENTORY_ID
+                  AND END_DATE_TIME IS NULL
+                  order by VIEW_ID desc
+               )where rowNum <= 1;
               init_data.PIN1 := null;
               init_data.PIN2 := null;
               init_data.PUK1 := null;
@@ -511,6 +514,12 @@ BEGIN
               --  if init_data_profile.PAYMENT_MODE = 1 and init_data_profile.STATUS = 8 then --FIX 8 ==> 1 2020/11/06
               --   init_data_profile.STATUS := 1; 
               -- end if;
+              if (CURRENT_STATE = 1 AND PAYMENT_MODE1 = 1 ) then
+                    init_data_profile.STATUS := 16;
+              end if;
+              if (CURRENT_STATE = 2 OR CURRENT_STATE = 7 OR CURRENT_STATE = 50 OR CURRENT_STATE = 51 OR CURRENT_STATE = 52 OR CURRENT_STATE = 53) then
+                    init_data_profile.STATUS := 2;
+              end if;
 
               INSERT INTO INVUSER.INV_MASTER 
               ( MASTER_ID, CREATED_DATE, UPDATED_DATE, CREATED_BY, UPDATED_BY, IS_ACTIVE, REMARK, EXTERNAL_ID, EXTN_ID_TYPE, MVNO_ID, OPERATOR_ID, PIN1, PIN2, PUK1, PUK2, SECONDARY_CODE, ZONE_ID, IMSI, NUMBER_TYPE, SIM_FLAG, SIM_CODE, DIGIT ) 
@@ -544,7 +553,7 @@ BEGIN
 
 
   END LOOP;
-  --DBMS_OUTPUT.PUT_LINE( 'End' || to_char(sysdate , 'dd/mm/yyyy hh24:mi'));
+  DBMS_OUTPUT.PUT_LINE( 'End' || to_char(sysdate , 'dd/mm/yyyy hh24:mi'));
 
 
 END MIGRATE_INV_MASTER_4;
